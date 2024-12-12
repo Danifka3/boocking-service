@@ -1,27 +1,27 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-const { swaggerUi, swaggerDocs } = require('./swagger');
+const dotenv = require('dotenv');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+const apiRoutes = require('./routes/api');
 
-const createRoutes = require('./routes/create');
-const readRoutes = require('./routes/read');
-const deleteRoutes = require('./routes/delete');
+dotenv.config();
 
 const app = express();
-app.use(bodyParser.json());
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+app.use(express.json());
 
-// Подключение к MongoDB
-mongoose.connect('mongodb://localhost:27017/block09db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+// Connect to MongoDB
+const mongoURI = process.env.MONGO_URI;
+mongoose.connect(mongoURI)
+    .then(() => console.log('Connected to MongoDB'))
+    .catch(err => console.error('MongoDB connection error:', err));
 
-// Подключение маршрутов
-app.use(createRoutes);
-app.use(readRoutes);
-app.use(deleteRoutes);
+// Swagger documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Запуск сервера
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/api-docs`));
+// API routes
+app.use('/api', apiRoutes);
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
