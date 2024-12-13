@@ -1,6 +1,11 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
-  Стартовая страница
+ Привет, мир
 </template>
+
+<style scoped>
+
+</style>
