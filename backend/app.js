@@ -4,10 +4,13 @@ const dotenv = require('dotenv');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
 const apiRoutes = require('./routes/api');
+const cors = require('cors');
+
 
 dotenv.config();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Connect to MongoDB
