@@ -14,6 +14,7 @@
   "paths": {
     "/users/register": {
       "post": {
+        "tags": ["Users"],
         "summary": "Register a new user",
         "requestBody": {
           "content": {
@@ -42,6 +43,7 @@
     },
     "/users/login": {
       "post": {
+        "tags": ["Users"],
         "summary": "Login user",
         "requestBody": {
           "content": {
@@ -69,6 +71,7 @@
     },
     "/users/me": {
       "patch": {
+        "tags": ["Users"],
         "summary": "Update current user",
         "description": "Update the current user's email or name. The user ID is extracted from the token.",
         "security": [
@@ -162,6 +165,7 @@
         }
       },
       "get": {
+        "tags": ["Users"],
         "summary": "Get current user",
         "security": [{ "bearerAuth": [] }],
         "responses": {
@@ -176,6 +180,7 @@
     },
     "/users": {
       "get": {
+        "tags": ["Users"],
         "summary": "Get all users (admin only)",
         "description": "Retrieve a list of all users. This endpoint is accessible only by admin users.",
         "security": [
@@ -246,6 +251,7 @@
     },
     "/users/{id}": {
       "delete": {
+        "tags": ["Users"],
         "summary": "Delete a user (admin only)",
         "description": "Delete a user by their ID. Only accessible by admin users.",
         "security": [
@@ -335,6 +341,7 @@
     },
     "/locations": {
       "get": {
+        "tags": ["Locations"],
         "summary": "Get all locations",
         "responses": {
           "200": {
@@ -346,6 +353,7 @@
         }
       },
       "post": {
+        "tags": ["Locations"],
         "summary": "Add a new location (admin only)",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
@@ -379,6 +387,7 @@
     },
     "/locations/{id}": {
       "put": {
+        "tags": ["Locations"],
         "summary": "Update a location (admin only)",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
@@ -422,6 +431,7 @@
         }
       },
       "delete": {
+        "tags": ["Locations"],
         "summary": "Delete a location (admin only)",
         "security": [
           {
@@ -457,6 +467,7 @@
     },
     "/bookings": {
       "post": {
+        "tags": ["Bookings"],
         "summary": "Create a booking",
         "security": [{ "bearerAuth": [] }],
         "requestBody": {
@@ -484,6 +495,7 @@
         }
       },
       "get": {
+        "tags": ["Bookings"],
         "summary": "Get user bookings",
         "security": [{ "bearerAuth": [] }],
         "responses": {
@@ -498,6 +510,7 @@
     },
     "/bookings/all": {
       "get": {
+        "tags": ["Bookings"],
         "summary": "Get all bookings (admin only)",
         "security": [{ "bearerAuth": [] }],
         "responses": {
@@ -512,6 +525,7 @@
     },
     "/bookings/{id}": {
       "patch": {
+        "tags": ["Bookings"],
         "summary": "Update a booking (admin only)",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
@@ -554,6 +568,7 @@
         }
       },
       "delete": {
+        "tags": ["Bookings"],
         "summary": "Cancel a booking",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
@@ -574,6 +589,112 @@
           },
           "500": {
             "description": "Error canceling booking"
+          }
+        }
+      }
+    },
+
+    "/bookings/available-slots": {
+      "get": {
+        "tags": ["Bookings"],
+        "summary": "Get available booking slots",
+        "description": "Retrieve available booking slots for a specific location and date. Slots are calculated based on existing bookings and location capacity.",
+        "security": [
+          { "bearerAuth": [] }
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2024-12-15"
+            },
+            "description": "The date for which to retrieve available slots (format: YYYY-MM-DD)."
+          },
+          {
+            "name": "location_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "64b1f0c1d85e4d1234567890"
+            },
+            "description": "The ID of the location for which to retrieve available slots."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available booking slots.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "date": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "The date for which slots were calculated."
+                    },
+                    "location_id": {
+                      "type": "string",
+                      "description": "The ID of the location."
+                    },
+                    "availableSlots": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "example": "09:00"
+                      },
+                      "description": "Array of available time slots in 1-hour increments."
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Example response",
+                    "value": {
+                      "date": "2024-12-15",
+                      "location_id": "64b1f0c1d85e4d1234567890",
+                      "availableSlots": ["09:00", "11:00", "13:00", "15:00"]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request, such as missing date or location_id.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Date and location_id are required"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Location not found.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Location not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Error fetching available slots",
+                  "error": "Detailed error message"
+                }
+              }
+            }
           }
         }
       }

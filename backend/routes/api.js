@@ -2,6 +2,7 @@ const express = require('express');
 const { registerUser, loginUser, getCurrentUser, getAllUsers, deleteUser, updateUser } = require('../controllers/userController');
 const { getLocations, addLocation, updateLocation, deleteLocation } = require('../controllers/locationController');
 const { createBooking, getUserBookings, getAllBookings, cancelBooking, updateBooking } = require('../controllers/bookingController');
+const { getAvailableSlots } = require('../controllers/additionalController');
 const authenticateToken = require('./middleware/authMiddleware');
 
 const router = express.Router();
@@ -27,4 +28,5 @@ router.get('/bookings/all', authenticateToken, getAllBookings);
 router.patch('/bookings/:id', authenticateToken, updateBooking);
 router.delete('/bookings/:id', authenticateToken, cancelBooking);
 
+router.get('/available-slots', authenticateToken, getAvailableSlots);
 module.exports = router;

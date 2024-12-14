@@ -24,12 +24,16 @@ exports.createBooking = async (req, res) => {
 
 exports.getUserBookings = async (req, res) => {
     try {
-        const bookings = await Booking.find({ user_id: req.user.id }).populate('location_id', 'name');
+        const bookings = await Booking.find({ user_id: req.user.id })
+            .populate('location_id', 'name') // Добавляем информацию о локации (только имя)
+            .populate('user_id', 'name');   // Добавляем информацию о пользователе (только имя)
+
         res.json(bookings);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching bookings', error });
     }
 };
+
 
 exports.getAllBookings = async (req, res) => {
     if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
