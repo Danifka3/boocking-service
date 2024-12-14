@@ -34,3 +34,21 @@ exports.updateLocation = async (req, res) => {
         res.status(400).json({ message: 'Error updating location', error });
     }
 };
+
+exports.deleteLocation = async (req, res) => {
+    if (req.user.role !== 'admin') {
+        return res.status(403).json({ message: 'Access denied' });
+    }
+
+    try {
+        const location = await Location.findByIdAndDelete(req.params.id);
+        if (!location) {
+            return res.status(404).json({ message: 'Location not found' });
+        }
+
+        res.json({ message: 'Location deleted successfully', location });
+    } catch (error) {
+        res.status(400).json({ message: 'Error deleting location', error });
+    }
+};
+

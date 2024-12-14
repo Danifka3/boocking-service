@@ -1,6 +1,6 @@
 const express = require('express');
-const { registerUser, loginUser, getCurrentUser } = require('../controllers/userController');
-const { getLocations, addLocation, updateLocation } = require('../controllers/locationController');
+const { registerUser, loginUser, getCurrentUser, getAllUsers, deleteUser, updateUser } = require('../controllers/userController');
+const { getLocations, addLocation, updateLocation, deleteLocation } = require('../controllers/locationController');
 const { createBooking, getUserBookings, getAllBookings, cancelBooking, updateBooking } = require('../controllers/bookingController');
 const authenticateToken = require('./middleware/authMiddleware');
 
@@ -10,11 +10,15 @@ const router = express.Router();
 router.post('/users/register', registerUser);
 router.post('/users/login', loginUser);
 router.get('/users/me', authenticateToken, getCurrentUser);
+router.patch('/users/me', authenticateToken, updateUser);
+router.get('/users', authenticateToken, getAllUsers);
+router.delete('/users/:id', authenticateToken, deleteUser);
 
 // Location routes
 router.get('/locations', getLocations);
 router.post('/locations', authenticateToken, addLocation);
 router.put('/locations/:id', authenticateToken, updateLocation);
+router.delete('/locations/:id', authenticateToken, deleteLocation);
 
 // Booking routes
 router.post('/bookings', authenticateToken, createBooking);
