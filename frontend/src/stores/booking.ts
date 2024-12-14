@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { getUserBookings, availableBookingSlots, createBooking, deleteBooking, getAllBookings } from '@/api/bookings';
+import { getUserBookings, availableBookingSlots, createBooking, deleteBooking, getAllBookings, updateBooking } from '@/api/bookings';
 import type { BookingState } from '@/models/booking'
 
 export const useBookingStore = defineStore('booking', {
@@ -39,10 +39,19 @@ export const useBookingStore = defineStore('booking', {
 
     async removeBooking(id: string) {
       try {
-        await deleteBooking(String(id));
-        // this.bookings = this.bookings.filter((booking) => booking.id !== id);
+        await deleteBooking(id);
       } catch (error) {
         console.error('Ошибка удаления бронирования:', error);
+      }
+    },
+
+    async updateBooking(id: string, date: string, time: string, status: string) {
+      try {
+        await updateBooking(id, date, time, status);
+        return true
+      } catch (error) {
+        console.error('Ошибка удаления бронирования:', error);
+        return false
       }
     },
 

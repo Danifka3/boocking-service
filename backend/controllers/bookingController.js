@@ -47,8 +47,6 @@ exports.getAllBookings = async (req, res) => {
 };
 
 exports.updateBooking = async (req, res) => {
-    if (req.user.role !== 'admin') return res.status(403).json({ message: 'Access denied' });
-
     try {
         const booking = await Booking.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!booking) return res.status(404).json({ message: 'Booking not found' });

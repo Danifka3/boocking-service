@@ -16,8 +16,8 @@ export const getAllBookings = () => {
 };
 
 // Обновить бронирование (только для админа)
-export const updateBooking = (id: string, data: { date: string }) => {
-  return apiClient.patch(`/bookings/${id}`, data);
+export const updateBooking = (id: string, date: string, time: string, status: string) => {
+  return apiClient.patch(`/bookings/${id}`, {date, time, status});
 };
 
 // Удалить бронирование

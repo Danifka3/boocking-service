@@ -526,7 +526,7 @@
     "/bookings/{id}": {
       "patch": {
         "tags": ["Bookings"],
-        "summary": "Update a booking (admin only)",
+        "summary": "Update a booking",
         "security": [{ "bearerAuth": [] }],
         "parameters": [
           {

@@ -33,9 +33,8 @@ onBeforeMount(async () =>  {
     <div class="container">
       <RouterLink to="/"><img alt="App logo" class="logo" src="@/assets/logo.svg" width="80" height="80" /></RouterLink>
       <nav>
-<!--        <RouterLink to="/locations" class="nav-link">Locations</RouterLink>-->
         <RouterLink v-if="currentUser?.role === 'admin'" to="/users" class="nav-link">Users</RouterLink>
-        <RouterLink to="/bookings" class="nav-link">Bookings</RouterLink>
+        <RouterLink v-if="isAuthenticated" to="/bookings" class="nav-link">Bookings</RouterLink>
         <button v-if="!isAuthenticated" @click="handleLoginClick" class="auth-button">Login</button>
         <div class="nav-link-container" v-else>
           <RouterLink to="/profile" class="nav-link">My Profile</RouterLink>
