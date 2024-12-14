@@ -2,9 +2,12 @@
 import { RouterLink, RouterView, useRouter } from 'vue-router';
 import { useUserStore } from './stores/user.ts';
 import { storeToRefs } from 'pinia';
+import { onBeforeMount } from 'vue'
 
 const userStore = useUserStore();
-const { isAuthenticated } = storeToRefs(userStore);
+const { currentUser, isAuthenticated } = storeToRefs(userStore);
+const { fetchCurrentUser, restoreSession } = userStore;
+
 const router = useRouter();
 
 const handleLoginClick = () => {
@@ -15,6 +18,14 @@ const handleLogoutClick = () => {
   userStore.logout(); // Вызываем метод logout из userStore
   router.push('/'); // Возвращаем на главную страницу после выхода
 };
+
+onBeforeMount(async () =>  {
+  restoreSession();
+
+  if (isAuthenticated.value) {
+    await fetchCurrentUser()
+  }
+})
 </script>
 
 <template>
@@ -22,8 +33,8 @@ const handleLogoutClick = () => {
     <div class="container">
       <RouterLink to="/"><img alt="App logo" class="logo" src="@/assets/logo.svg" width="80" height="80" /></RouterLink>
       <nav>
-        <RouterLink to="/locations" class="nav-link">Locations</RouterLink>
-        <RouterLink to="/users" class="nav-link">Users</RouterLink>
+<!--        <RouterLink to="/locations" class="nav-link">Locations</RouterLink>-->
+        <RouterLink v-if="currentUser?.role === 'admin'" to="/users" class="nav-link">Users</RouterLink>
         <RouterLink to="/bookings" class="nav-link">Bookings</RouterLink>
         <button v-if="!isAuthenticated" @click="handleLoginClick" class="auth-button">Login</button>
         <div class="nav-link-container" v-else>

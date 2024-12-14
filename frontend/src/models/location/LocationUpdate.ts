@@ -1,5 +1,3 @@
-import { Location } from './Location';
+import type { Location } from './Location';
 
-export interface LocationUpdate extends Omit<Location, 'created_at'> {
-  id: string;
-}
+export type LocationUpdate = Omit<Location, 'created_at'>
