@@ -52,8 +52,7 @@ const bookLocation = (location: Location) => {
 };
 
 const removeLocation = async (locationId: string) => {
-  await deleteLocation(locationId);
-  await getLocations();
+  if (confirm('Are you sure you want to delete this location?')) await deleteLocation(locationId);
 };
 
 const editLocation = (location: Location) => {

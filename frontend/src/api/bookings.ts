@@ -1,7 +1,7 @@
 import apiClient from './base.ts';
 
 // Создать бронирование
-export const createBooking = (data: { locationId: number; userId: number; date: string }) => {
+export const createBooking = (data: { location_id: string, date: string, time: string }) => {
   return apiClient.post('/bookings', data);
 };
 
@@ -23,4 +23,10 @@ export const updateBooking = (id: string, data: { date: string }) => {
 // Удалить бронирование
 export const deleteBooking = (id: string) => {
   return apiClient.delete(`/bookings/${id}`);
+};
+
+export const availableBookingSlots = (date: string, locationId: string) => {
+  return apiClient.get(`/available-slots`, {
+    params: { date, location_id: locationId }
+  });
 };

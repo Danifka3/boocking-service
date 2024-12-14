@@ -50,9 +50,9 @@ const updateLocationHandler = async () => {
       closeModal();
       return
     }
-    error.value = 'Произошла ошибка'
+    error.value = 'An error occurred'
   } else {
-    error.value = 'Заполните все поля'
+    error.value = 'Fill all fields'
   }
 };
 </script>

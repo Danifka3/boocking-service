@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-// import { createBooking, getUserBookings, deleteBooking } from '@/api/bookings';
-import { getUserBookings } from '@/api/bookings';
+import { getUserBookings, availableBookingSlots, createBooking, deleteBooking, getAllBookings } from '@/api/bookings';
 import type { BookingState } from '@/models/booking'
 
 export const useBookingStore = defineStore('booking', {
   state: (): BookingState => ({
     bookings: [],
+    timeSlots: [],
   }),
   actions: {
     async fetchUserBookings() {
@@ -17,22 +17,42 @@ export const useBookingStore = defineStore('booking', {
       }
     },
 
-    // async addBooking(data: { locationId: number; date: string }) {
-    //   try {
-    //     await createBooking(data);
-    //     await this.fetchUserBookings(); // Обновляем список
-    //   } catch (error) {
-    //     console.error('Ошибка создания бронирования:', error);
-    //   }
-    // },
+    async getAllUserBookings() {
+      try {
+        const response = await getAllBookings();
+        this.bookings = response.data;
+      } catch (error) {
+        console.error('Ошибка получения бронирований:', error);
+      }
+    },
 
-    // async removeBooking(id: number) {
-    //   try {
-    //     await deleteBooking(String(id));
-    //     this.bookings = this.bookings.filter((booking) => booking.id !== id);
-    //   } catch (error) {
-    //     console.error('Ошибка удаления бронирования:', error);
-    //   }
-    // },
+    async addBooking(location_id: string, date: string, time: string ) {
+      try {
+        await createBooking({location_id, date, time});
+        await this.fetchUserBookings(); // Обновляем список
+        return true
+      } catch (error) {
+        console.error('Ошибка создания бронирования:', error);
+        return false
+      }
+    },
+
+    async removeBooking(id: string) {
+      try {
+        await deleteBooking(String(id));
+        // this.bookings = this.bookings.filter((booking) => booking.id !== id);
+      } catch (error) {
+        console.error('Ошибка удаления бронирования:', error);
+      }
+    },
+
+    async availableBookingSlots(date: string, locationId: string) {
+      try {
+        const response = await availableBookingSlots(date, locationId);
+        this.timeSlots = response.data.availableSlots;
+      } catch (error) {
+        console.error('Ошибка удаления бронирования:', error);
+      }
+    },
   },
 });

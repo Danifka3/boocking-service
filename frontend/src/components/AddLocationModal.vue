@@ -22,6 +22,12 @@ const location = ref({
 const error = ref('')
 
 const closeModal = () => {
+  location.value = {
+    name: '',
+    description: '',
+    capacity: 0,
+    price_per_booking: 0,
+  }
   emits('close');
 };
 
@@ -32,9 +38,9 @@ const addLocationHandler = async () => {
       closeModal();
       return
     }
-    error.value = 'Произошла ошибка'
+    error.value = 'An error occurred'
   } else {
-    error.value = 'Заполните все поля'
+    error.value = 'Fill all fields'
   }
 };
 </script>

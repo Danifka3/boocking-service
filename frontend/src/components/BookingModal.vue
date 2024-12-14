@@ -1,28 +1,53 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import type { Location } from '@/models/location'
+import { ref, watch } from 'vue';
+import type { Location } from '@/models/location';
+import { useBookingStore } from '@/stores/booking';
+import { storeToRefs } from 'pinia'
+
+const bookingStore = useBookingStore();
+const {availableBookingSlots, addBooking} = bookingStore
+const {timeSlots} = storeToRefs(bookingStore)
 
 interface BookingModalProps {
-  isVisible: boolean,
-  location: Location,
+  isVisible: boolean;
+  location: Location;
 }
 
-defineProps<BookingModalProps>();
+const props = defineProps<BookingModalProps>();
 const emits = defineEmits(['close', 'book']);
 
 const bookingDate = ref('');
 const selectedTime = ref('');
+const error = ref('');
 
 const closeModal = () => {
+  bookingDate.value = '';
+  selectedTime.value = '';
   emits('close');
 };
 
-const handleBooking = () => {
-  if (selectedTime.value) {
-    console.log()
-    closeModal();
+const handleBooking = async () => {
+  if (bookingDate.value && selectedTime.value) {
+    const response = await addBooking(props.location.id, bookingDate.value, selectedTime.value);
+    if (response) closeModal();
+    else error.value = 'An error occurred';
   }
 };
+
+// Наблюдаем за изменением даты
+watch(
+  [bookingDate, () => props.location],
+  async ([newDate, newLocation]) => {
+    if (newDate && newLocation) {
+      try {
+        await availableBookingSlots(newDate, newLocation.id);
+      } catch (error) {
+        console.error('Error fetching available slots:', error);
+      }
+    }
+  },
+  { immediate: true } // Вызываем сразу при монтировании
+);
 </script>
 
 <template>
@@ -34,16 +59,20 @@ const handleBooking = () => {
       </header>
       <div class="modal-body">
         <p>{{ location.description }}</p>
-        <br>
+        <br />
 
         <div class="form-group">
           <label for="booking-date">Booking Date</label>
-          <input type="date" id="booking-date" :value="bookingDate" readonly />
+          <input
+            type="date"
+            id="booking-date"
+            v-model="bookingDate"
+          />
         </div>
         <div class="time-options">
           <p>Select Time:</p>
           <button
-            v-for="time in ['10:00', '12:00', '14:00', '16:00']"
+            v-for="time in timeSlots"
             :key="time"
             class="time-button"
             @click="selectedTime = time"
@@ -54,9 +83,14 @@ const handleBooking = () => {
         </div>
       </div>
       <footer class="modal-footer">
-        <button class="book-button" :disabled="!selectedTime" @click="handleBooking">
+        <button
+          class="book-button"
+          :disabled="!selectedTime"
+          @click="handleBooking"
+        >
           Book
         </button>
+        <span style="color: #c82333">{{error}}</span>
       </footer>
     </div>
   </div>
